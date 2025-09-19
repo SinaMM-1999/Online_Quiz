@@ -8,7 +8,6 @@ let currentIndex = 0
 selectCategoryBtn.forEach((btn) => {
 
     if (btn) btn.addEventListener('click', () => {
-        console.log(btn.id);
         let dataArray = {
             url: 'https://quizapi.io/api/v1/questions?apiKey=YOUR_API_KEY&category=vuejs&limit=10',
             key: 'Xze1WZdzpyZfV86jHCvyveXN8i53IQBDMzFG9Z5L'
@@ -23,18 +22,14 @@ selectCategoryBtn.forEach((btn) => {
                 console.log(data);
 
             })
-            .catch(err => console.error('Error fetching questions:', err))
-
-
-
-
+            .catch((err => console.error('Error fetching questions:', err)))
     })
 })
 
 function loadIntro() {
     cardBody.innerHTML = `<div id="quiz-intro">
                             <div class="h3 pt-5 text-light">Are You Ready ?</div>
-                            <div class="p fs-5">( You have to answer all questions in 10 min ! )</div>
+                            <div class="p text-light">( You have to answer all questions in 10 min)</div>
                             <button id="startQuiz" class="btn btn-info px-5 py-2 fs-4 mt-5">Start <br>=></button>
                           </div>`
     let startQuizBtn = $.querySelector('#startQuiz')
@@ -48,7 +43,7 @@ function loadQuizQuestionsBody() {
     if (!questionObj) return
 
     cardBody.innerHTML = `
-        <div class="col-12 w-100 min-h-100 bg-secondary rounded-4 d-flex flex-column">
+        <div class="col-12 w-100 min-h-100 bg-secondary rounded-4 d-flex flex-column align-items-start">
             <div class="h6 pt-4 mx-4" id="quiz-question">
                 ${questionObj.question}
             </div>
@@ -73,17 +68,16 @@ function loadQuizQuestionsBody() {
             loadQuizQuestionsBody()
         }
     })
-
-
 }
+
 function renderAnswers(answersObj) {
     return Object.entries(answersObj)
         .filter(([key, val]) => val !== null)
         .map(([key, val], idx) => `
-            <div class="form-check ms-4 align-self-start">
+            <div class="form-check ms-4">
                 ${String.fromCharCode(97 + idx)}.
-                <input class="form-check-input border-dark" type="radio" name="radioDefault" id="${key}">
-                <label class="form-check-label" for="${key}">
+                <input class="form-check-input border-dark " type="radio" name="radioDefault" id="${key}">
+                <label class="form-check-label align-self-start" for="${key}">
                     ${val}
                 </label>
             </div>
