@@ -43,11 +43,11 @@ function loadQuizQuestionsBody() {
     if (!questionObj) return
 
     cardBody.innerHTML = `
-        <div class="col-12 w-100 min-h-100 bg-secondary rounded-4 d-flex flex-column align-items-start">
+        <div class="col-12 w-100 h-75 bg-secondary rounded-4 overflow-scroll d-flex flex-column align-items-start">
             <div class="h6 pt-4 mx-4" id="quiz-question">
                 ${questionObj.question}
             </div>
-            <div id="answer-box" class="mt-5 pb-5 ms-4 align-self-start">
+            <div id="answer-box" class="mt-5 pb-5 ms-4 d-flex align-items-start flex-column">
                 ${renderAnswers(questionObj.answers)}
             </div>
         </div>
@@ -68,20 +68,44 @@ function loadQuizQuestionsBody() {
             loadQuizQuestionsBody()
         }
     })
+    console.log(currentIndex)
+    
+    if (currentIndex == 9) {
+        let btns = document.querySelector('#N-P-button')
+        let resultBtn = document.createElement('div')
+        resultBtn.innerHTML = `<button class="btn btn-outline-success" id="">Result</button>`
+        btns.appendChild(resultBtn)
+        document.querySelector('#nextBtn').remove()
+    }
+
+    showQuizResult()
+}
+
+function showQuizResult(){
+    resultBtn.addEventListener('click', () =>{
+        cardBody.innerHTML = ''
+        cardBody.innerHTML = `<div class='h3 text-info'>0</div>`
+    })
 }
 
 function renderAnswers(answersObj) {
     return Object.entries(answersObj)
         .filter(([key, val]) => val !== null)
-        .map(([key, val], idx) => `
-            <div class="form-check ms-4">
-                ${String.fromCharCode(97 + idx)}.
-                <input class="form-check-input border-dark " type="radio" name="radioDefault" id="${key}">
-                <label class="form-check-label align-self-start" for="${key}">
-                    ${val}
-                </label>
-            </div>
-        `).join('')
+        .map(([key, val], idx) => {
+            let safeVal = val.includes('<') && val.includes('>')
+                ? `<code>${val.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>`
+                : val;
+
+            return `
+                <div class="form-check ms-4 align-self-start">
+                    ${String.fromCharCode(97 + idx)}.
+                    <input class="form-check-input border-dark" type="radio" name="radioDefault" id="${key}">
+                    <label class="form-check-label text-dark" for="${key}">
+                        ${safeVal}
+                    </label>
+                </div>
+            `
+        }).join('')
 }
 
 
