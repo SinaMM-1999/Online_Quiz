@@ -4,13 +4,14 @@ let cardBody = $.querySelector('#card-body')
 
 let currentQuestions = []
 let currentIndex = 0
+let answered = []
 
 selectCategoryBtn.forEach((btn) => {
 
     if (btn) btn.addEventListener('click', () => {
         let dataArray = {
             url: 'https://quizapi.io/api/v1/questions?apiKey=YOUR_API_KEY&category=vuejs&limit=10',
-            key: 'Xze1WZdzpyZfV86jHCvyveXN8i53IQBDMzFG9Z5L'
+            key: 'aWogy18ykSQabd2vAnh0lFikOeGCqTqXOS6CcaJZ'
         }
 
         fetch(`https://quizapi.io/api/v1/questions?apiKey=${dataArray.key}&category=${btn.id}&limit=10`)
@@ -18,9 +19,9 @@ selectCategoryBtn.forEach((btn) => {
             .then(data => {
                 currentQuestions = data
                 currentIndex = 0
+                answered = new Array(data.length).fill(null)
                 loadIntro()
                 console.log(data);
-
             })
             .catch((err => console.error('Error fetching questions:', err)))
     })
@@ -55,36 +56,85 @@ function loadQuizQuestionsBody() {
             <button class="btn btn-outline-danger" id="prevBtn">Previous</button>
             <button class="btn btn-outline-info" id="nextBtn">Next</button>
         </div>
-                        `
+    `
+
     document.querySelector('#nextBtn').addEventListener('click', () => {
         if (currentIndex < currentQuestions.length - 1) {
             currentIndex++
             loadQuizQuestionsBody()
         }
     })
+
     document.querySelector('#prevBtn').addEventListener('click', () => {
         if (currentIndex > 0) {
             currentIndex--
             loadQuizQuestionsBody()
         }
     })
-    console.log(currentIndex)
-    
-    if (currentIndex == 9) {
+
+    if (currentIndex == currentQuestions.length - 1) {
         let btns = document.querySelector('#N-P-button')
-        let resultBtn = document.createElement('div')
-        resultBtn.innerHTML = `<button class="btn btn-outline-success" id="">Result</button>`
+        let resultBtn = document.createElement('button')
+        resultBtn.className = "btn btn-outline-success"
+        resultBtn.id = "resultBtn"
+        resultBtn.innerText = "Result"
         btns.appendChild(resultBtn)
         document.querySelector('#nextBtn').remove()
+
+        resultBtn.addEventListener('click', () => {
+            showQuizResult()
+        })
     }
 
-    showQuizResult()
+    addAnswerListeners(questionObj)
+    console.log(currentIndex)
+}
+
+function addAnswerListeners(questionObj) {
+    let correctAnswers = questionObj.correct_answers
+
+    Object.entries(correctAnswers).forEach(([key, val]) => {
+        if (val === "true") {
+            let correctId = key.replace("_correct", "")
+            let correctInput = document.getElementById(correctId)
+            if (correctInput) correctInput.dataset.correct = "true"
+        }
+    })
+
+    let allOptions = document.querySelectorAll('input[name="radioDefault"]')
+    allOptions.forEach(option => {
+        option.addEventListener('change', () => {
+            if (option.dataset.correct === "true") {
+                answered[currentIndex] = true
+            } else {
+                answered[currentIndex] = false
+            }
+            allOptions.forEach(opt => opt.disabled = true)
+        })
+    })
 }
 
 function showQuizResult(){
-    resultBtn.addEventListener('click', () =>{
-        cardBody.innerHTML = ''
-        cardBody.innerHTML = `<div class='h3 text-info'>0</div>`
+    let correctCount = answered.filter(ans => ans === true).length
+    let wrongCount = answered.filter(ans => ans === false).length
+    let total = currentQuestions.length
+    let percent = Math.round((correctCount / total) * 100)
+
+    cardBody.innerHTML = `
+        <div class="col-12 w-100 bg-dark rounded-4 text-light text-center p-4">
+            <h3 class="text-info">🎉 Quiz Finished 🎉</h3>
+            <p class="mt-3">Total Questions: ${total}</p>
+            <p class="text-success">✅ Correct: ${correctCount}</p>
+            <p class="text-danger">❌ Wrong: ${wrongCount}</p>
+            <h4 class="mt-3">Score: ${percent}%</h4>
+            <button class="btn btn-outline-light mt-4" id="restartBtn">Restart</button>
+        </div>
+    `
+
+    document.querySelector('#restartBtn').addEventListener('click', () => {
+        currentIndex = 0
+        answered = new Array(currentQuestions.length).fill(null)
+        loadIntro()
     })
 }
 
@@ -107,12 +157,3 @@ function renderAnswers(answersObj) {
             `
         }).join('')
 }
-
-
-
-
-
-
-
-
-
