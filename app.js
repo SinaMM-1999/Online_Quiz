@@ -46,6 +46,7 @@ function loadQuizQuestionsBody() {
     cardBody.innerHTML = `
         <div class="col-12 w-100 h-75 bg-secondary rounded-4 overflow-scroll d-flex flex-column align-items-start">
             <div class="h6 pt-4 mx-4" id="quiz-question">
+                ${currentIndex + 1}.
                 ${questionObj.question}
             </div>
             <div id="answer-box" class="mt-5 pb-5 ms-4 d-flex align-items-start flex-column">
