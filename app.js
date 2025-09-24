@@ -144,7 +144,7 @@ function renderAnswers(answersObj) {
         .filter(([key, val]) => val !== null)
         .map(([key, val], idx) => {
             let safeVal = val.includes('<') && val.includes('>')
-                ? `<code>${val.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>`
+                ? `<code class="text-dark">${val.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>`
                 : val;
 
             return `
